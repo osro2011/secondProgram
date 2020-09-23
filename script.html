@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title></title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <script src="http://koda.nu/simple.js">
+        class Point {
+            constructor(X, Y) {
+                this.x = X;
+                this.y = Y;
+            }
+        }
+        
+        class Vector {
+            constructor(Velocity, Angle) {
+                this.velocity = Velocity;
+                this.angle = Angle * (Math.PI/180);
+            };
+
+            toXY() {
+                this.x = this.velocity * Math.cos(this.angle);
+                this.y = this.velocity * Math.sin(this.angle); 
+                return [this.x, this.y]
+            };
+
+            bounce(bounceAngle) {
+                
+                this.angle += (180 - this.angle) * (Math.PI/180);
+            };
+        };
+
+        class Cube {
+            constructor(Point, Vector, Bounds, Size){
+                this.coordinates = Point;
+                this.velocity = Vector;
+                this.bounds = Bounds;
+                this.size = Size;
+            };
+
+            drawCube() {
+                rectangle(this.coordinates.x, this.coordinates.y, this.size, this.size, "red");
+                var add = this.velocity.toXY();
+                this.coordinates.x += add[0];
+                this.coordinates.y += add[1];
+
+                if (this.coordinates.y > this.bounds.height - this.size || this.coordinates.y < 0) {
+                    this.velocity.bounce(0);
+                };
+
+                if (this.coordinates.x > this.bounds.width - this.size || this.coordinates.x < 0) {
+                    this.velocity.bounce(90);
+                };
+            };
+        };
+
+        canvas = document.getElementById("canvas")
+		bounds = {
+			height: canvas.height,
+			width: canvas.width
+        };
+        
+        cube1 = new Cube(new Point(0, 0), new Vector(10, 45), bounds, 20);
+
+        function update(){
+            clearScreen();
+            cube1.drawCube();
+        }
+        </script>
+    </body>
+</html>

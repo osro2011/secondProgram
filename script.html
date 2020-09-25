@@ -28,8 +28,9 @@
             };
 
             bounce(bounceAngle) {
-                
-                this.angle += (180 - this.angle) * (Math.PI/180);
+                var angleDeg = this.angle/(Math.PI/180);
+                var answerDeg = (180 - (angleDeg + (2 * bounceAngle)))%360;
+                this.angle = answerDeg * (Math.PI/180);
             };
         };
 
@@ -47,12 +48,16 @@
                 this.coordinates.x += add[0];
                 this.coordinates.y += add[1];
 
-                if (this.coordinates.y > this.bounds.height - this.size || this.coordinates.y < 0) {
-                    this.velocity.bounce(0);
+                if (this.coordinates.y > this.bounds.height - this.size) {
+                    this.velocity.bounce(90);
+                } else if (this.coordinates.y < 0) {
+                    this.velocity.bounce(90);
                 };
 
-                if (this.coordinates.x > this.bounds.width - this.size || this.coordinates.x < 0) {
-                    this.velocity.bounce(90);
+                if (this.coordinates.x > this.bounds.width - this.size) {
+                    this.velocity.bounce(0);
+                } else if (this.coordinates.x < 0){
+                    this.velocity.bounce(0);
                 };
             };
         };
@@ -63,11 +68,12 @@
 			width: canvas.width
         };
         
-        cube1 = new Cube(new Point(0, 0), new Vector(10, 45), bounds, 20);
+        cube1 = new Cube(new Point(bounds.width/2, bounds.height/2), new Vector(10, 90), bounds, 20);
 
         function update(){
             clearScreen();
             cube1.drawCube();
+            console.log(cube1.velocity.angle/(Math.PI/180));
         }
         </script>
     </body>

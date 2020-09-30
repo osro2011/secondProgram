@@ -35,24 +35,25 @@
         };
 
         class Cube {
-            constructor(Point, Vector, Bounds, Size){
+            constructor(Point, Vector, Bounds, Size, Color = "red"){
                 this.coordinates = Point;
                 this.velocity = Vector;
                 this.bounds = Bounds;
                 this.size = Size;
+                this.color = Color;
             };
 
             drawCube() {
-                rectangle(this.coordinates.x, this.coordinates.y, this.size, this.size, "red");
+                rectangle(this.coordinates.x, this.coordinates.y, this.size, this.size, this.color);
                 var components = this.velocity.toXY();
                 this.coordinates.x += components[0];
                 this.coordinates.y += components[1];
 
-                if (this.coordinates.y > this.bounds.height - this.size || this.coordinates.y < 0) {
+                if (this.coordinates.y > this.bounds.maxHeight - this.size || this.coordinates.y < this.bounds.minHeight) {
                     this.velocity.bounce(90);
                 };
 
-                if (this.coordinates.x > this.bounds.width - this.size || this.coordinates.x < 0) {
+                if (this.coordinates.x > this.bounds.maxWidth - this.size || this.coordinates.x < this.bounds.minWidth) {
                     this.velocity.bounce(0);
                 };
             };
@@ -62,31 +63,55 @@
                 line(this.coordinates.x + this.size/2, this.coordinates.y + this.size/2, this.coordinates.x + this.size/2 + components[0]*this.size/5, this.coordinates.y + this.size/2 + components[1]*this.size/5, 3, "black");
             };
 
-            checkCollision(cubeList) {
 
+            checkCollision(cubeList) {
+                var collisionCube = 0;
+                for (var collisionCube of cubeList) {
+                    console.log("Cube checked: " + collisionCube);
+                    if (!(this.coordinates.x + this.size < collisionCube.coordinates.x || this.coordinates.x > collisionCube.coordinates.x + collisionCube.size) && !(this.coordinates.y + this.size < collisionCube.coordinates.y || this.coordinates.y > collisionCube.coordinates.y + collisionCube.size)) {
+                        return collisionCube;
+                    };
+                };
+                return false;
             };
         };
 
         canvas = document.getElementById("canvas")
 		bounds = {
-			height: canvas.height,
-			width: canvas.width
+            minHeight: canvas.height * 0.1,
+            minWidth: canvas.width * 0.1,
+			maxHeight: canvas.height * 0.9,
+			maxWidth: canvas.width * 0.9
         };
+
 
         var cubes = [];
         
-        for (cube = 0; cube < 3; cube++) {
-            cubes[cube] = new Cube(new Point(500, 500), new Vector(random(1, 15), random(0, 360)), bounds, 30);
+        for (cube = 0; cube < 2; cube++) {
+            cubes[cube] = new Cube(new Point(500, 500), new Vector(random(1, 15), random(0, 360)), bounds, 100);
         };
 
         function update() {
             clearScreen();
-            for (cube = 0; cube < cubes.length; cube++) {
-                console.log(cube);
-                cubes[cube].drawCube();
-                cubes[cube].drawVector();
+            rectangle(bounds.minWidth, bounds.minHeight, bounds.maxWidth - bounds.minWidth, bounds.maxHeight - bounds.minHeight, "#f0f");
+            var collisionCubes = cubes.slice();
+            for (var cube of cubes) {
+                cube.drawCube();
+                cube.drawVector();
+                collisionCubes.shift();
+                console.log("Cube checking: " + cube);
+                collided = cube.checkCollision(collisionCubes);
+                if (collided != false) {
+                    console.log(cube + "and" + collided + "have the same x ish")
+                    cube.color = "limegreen";
+                    collided.color = "limegreen";
+                } else {
+                    cube.color = "red";
+                };
             };
         };
         </script>
     </body>
 </html>
+
+

@@ -44,21 +44,26 @@
 
             drawCube() {
                 rectangle(this.coordinates.x, this.coordinates.y, this.size, this.size, "red");
-                var add = this.velocity.toXY();
-                this.coordinates.x += add[0];
-                this.coordinates.y += add[1];
+                var components = this.velocity.toXY();
+                this.coordinates.x += components[0];
+                this.coordinates.y += components[1];
 
-                if (this.coordinates.y > this.bounds.height - this.size) {
-                    this.velocity.bounce(90);
-                } else if (this.coordinates.y < 0) {
+                if (this.coordinates.y > this.bounds.height - this.size || this.coordinates.y < 0) {
                     this.velocity.bounce(90);
                 };
 
-                if (this.coordinates.x > this.bounds.width - this.size) {
-                    this.velocity.bounce(0);
-                } else if (this.coordinates.x < 0){
+                if (this.coordinates.x > this.bounds.width - this.size || this.coordinates.x < 0) {
                     this.velocity.bounce(0);
                 };
+            };
+
+            drawVector() {
+                var components = this.velocity.toXY();
+                line(this.coordinates.x + this.size/2, this.coordinates.y + this.size/2, this.coordinates.x + this.size/2 + components[0]*this.size/5, this.coordinates.y + this.size/2 + components[1]*this.size/5, 3, "black");
+            };
+
+            checkCollision(cubeList) {
+
             };
         };
 
@@ -67,14 +72,21 @@
 			height: canvas.height,
 			width: canvas.width
         };
-        
-        cube1 = new Cube(new Point(bounds.width/2, bounds.height/2), new Vector(10, 90), bounds, 20);
 
-        function update(){
+        var cubes = [];
+        
+        for (cube = 0; cube < 3; cube++) {
+            cubes[cube] = new Cube(new Point(500, 500), new Vector(random(1, 15), random(0, 360)), bounds, 30);
+        };
+
+        function update() {
             clearScreen();
-            cube1.drawCube();
-            console.log(cube1.velocity.angle/(Math.PI/180));
-        }
+            for (cube = 0; cube < cubes.length; cube++) {
+                console.log(cube);
+                cubes[cube].drawCube();
+                cubes[cube].drawVector();
+            };
+        };
         </script>
     </body>
 </html>
